@@ -1,6 +1,11 @@
 import jwt, random, string, requests
-
 import subprocess
+import logging
+import concurrent.futures
+
+
+# Logging configuration
+logging.basicConfig(format="{asctime} - {levelname} - {message}", style="{", datefmt="%Y-%m-%d %H:%M:%S")
 
 def decode_token(token, secret):
     return jwt.decode(token, algorithms=["HS256"], key=secret)
@@ -28,3 +33,20 @@ def ping_url(url):
             print(response.stderr)
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def timeout_function(target_function, timeout):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(target_function)
+        try:
+            return future.result(timeout=timeout)
+        except concurrent.futures.TimeoutError:
+            logging.error(f"Timeout of {timeout} seconds exceeded durring code execution")
+            return None, None
+    
+
+def code_exec_functon(language, filename, input):
+    output = subprocess.run([language, filename], input=input, capture_output=True)
+    stdout = output.stdout.decode().strip()
+    stderr = output.stderr.decode().strip()
+
+    return stdout, stderr

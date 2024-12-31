@@ -141,20 +141,24 @@ def execute_code(data):
         with open(f"/home/codes/{user_uuid}/input.txt", "rb") as f:
             file = f.read()
 
-        if language_name == "Java":
-            output = subprocess.run(["java", filename], input=file, capture_output=True)
-            stdout = output.stdout.decode().strip()
-            stderr = output.stderr.decode().strip()
-        else:
-            output = subprocess.run(["python3", filename], input=file, capture_output=True)
-            stdout = output.stdout.decode().strip()
-            stderr = output.stderr.decode().strip()
+        # if language_name == "Java":
+        #     output = subprocess.run(["java", filename], input=file, capture_output=True)
+        #     stdout = output.stdout.decode().strip()
+        #     stderr = output.stderr.decode().strip()
+        # else:
+        #     output = subprocess.run(["python3", filename], input=file, capture_output=True)
+        #     stdout = output.stdout.decode().strip()
+        #     stderr = output.stderr.decode().strip()
 
-        if len(stderr) > len(stdout):
-            return stderr
+        stdout, stderr = utils.timeout_function(target_function=utils.code_exec_functon(language_name.lower(), filename, file), timeout=10) #time in seconds
+
+        if stdout == None and stderr == None:
+            return "Code Execution timed out"
         else:
-            return stdout
-        
+            if len(stderr) > len(stdout):
+                return stderr
+            else:
+                return stdout
     except Exception as e:
         logging.error(e)
         return "something went wrong"
