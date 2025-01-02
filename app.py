@@ -125,6 +125,8 @@ def execute_code(data):
 
         filename = ""
 
+        startercode = ""
+
         os.makedirs(os.path.dirname(f"/home/codes/{user_uuid}/"), exist_ok=True)
         with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
             f.write(input)
@@ -135,7 +137,11 @@ def execute_code(data):
                 f.write(code)
         elif language_name == "Python":
             filename = f"/home/codes/{user_uuid}/solution.py"
+            startercodefile = f"/starter.py"
+            with open(startercodefile, "w") as f:
+                startercode = f.read()
             with open(filename, "w") as f:
+                f.write(startercode)
                 f.write(code)
         
         with open(f"/home/codes/{user_uuid}/input.txt", "rb") as f:
