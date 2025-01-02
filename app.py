@@ -139,7 +139,7 @@ def execute_code(data):
             try:
                 filename = f"/home/codes/{user_uuid}/solution.py"
                 startercodefile = f"./starter.py"
-                with open(startercodefile, "rb") as f:
+                with open(startercodefile, "r") as f:
                     startercode = f.read()
                 with open(filename, "w") as f:
                     f.write(startercode)
