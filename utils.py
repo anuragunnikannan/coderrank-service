@@ -34,9 +34,9 @@ def ping_url(url):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def timeout_function(target_function, timeout):
+def timeout_function(language, filename, input, timeout):
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        future = executor.submit(target_function)
+        future = executor.submit(code_exec_function(language, filename, input))
         try:
             return future.result(timeout=timeout)
         except concurrent.futures.TimeoutError:
@@ -44,7 +44,7 @@ def timeout_function(target_function, timeout):
             return None, None
     
 
-def code_exec_functon(language, filename, input):
+def code_exec_function(language, filename, input):
     output = subprocess.run([language, filename], input=input, capture_output=True)
     stdout = output.stdout.decode().strip()
     stderr = output.stderr.decode().strip()

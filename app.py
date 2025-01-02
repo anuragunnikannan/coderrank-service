@@ -156,7 +156,10 @@ def execute_code(data):
         #     stdout = output.stdout.decode().strip()
         #     stderr = output.stderr.decode().strip()
 
-        stdout, stderr = utils.timeout_function(target_function=utils.code_exec_functon(language_name.lower(), filename, file), timeout=10) #time in seconds
+        language_name_lower = language_name.lower()
+        logging.error(f"Executing code for {language_name_lower} language")
+
+        stdout, stderr = utils.timeout_function(language_name_lower, filename, file, timeout=10) #time in seconds
 
         if stdout == None and stderr == None:
             return "Code Execution timed out"
