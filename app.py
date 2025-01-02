@@ -138,7 +138,7 @@ def execute_code(data):
         elif language_name == "Python":
             try:
                 filename = f"/home/codes/{user_uuid}/solution.py"
-                startercodefile = f"/starter.py"
+                startercodefile = f"./starter.py"
                 with open(startercodefile, "rb") as f:
                     startercode = f.read()
                 with open(filename, "w") as f:
@@ -162,7 +162,8 @@ def execute_code(data):
         language_name_lower = language_name.lower()
         logging.error(f"Executing code for {language_name_lower} language")
 
-        stdout, stderr = utils.timeout_function(language_name_lower, filename, file, timeout=10) #time in seconds
+        #utils.timeout_function(language_name_lower, filename, file, timeout=10)
+        stdout, stderr = utils.code_exec_function(language_name_lower, filename, file) #time in seconds
 
         if stdout == None and stderr == None:
             return "Code Execution timed out"
