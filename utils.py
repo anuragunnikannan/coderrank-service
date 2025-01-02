@@ -45,7 +45,7 @@ def timeout_function(language, filename, input, timeout):
     
 
 def code_exec_function(language, filename, input):
-    output = subprocess.run([language, filename], input=input, capture_output=True)
+    output = subprocess.run([language, filename], input=input, capture_output=True, timeout=5)
     stdout = output.stdout.decode().strip()
     stderr = output.stderr.decode().strip()
 
