@@ -141,6 +141,7 @@ def execute_code(data):
                 startercodefile = f"./starter.py"
                 with open(startercodefile, "r") as f:
                     startercode = f.read()
+                startercode = startercode + "\n"
                 with open(filename, "w") as f:
                     f.write(startercode)
                     f.write(code)
