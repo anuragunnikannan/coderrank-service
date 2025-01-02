@@ -136,13 +136,16 @@ def execute_code(data):
             with open(filename, "w") as f:
                 f.write(code)
         elif language_name == "Python":
-            filename = f"/home/codes/{user_uuid}/solution.py"
-            startercodefile = f"/starter.py"
-            with open(startercodefile, "w") as f:
-                startercode = f.read()
-            with open(filename, "w") as f:
-                f.write(startercode)
-                f.write(code)
+            try:
+                filename = f"/home/codes/{user_uuid}/solution.py"
+                startercodefile = f"/starter.py"
+                with open(startercodefile, "rb") as f:
+                    startercode = f.read()
+                with open(filename, "w") as f:
+                    f.write(startercode)
+                    f.write(code)
+            except Exception as e:
+                logging.error(e)
         
         with open(f"/home/codes/{user_uuid}/input.txt", "rb") as f:
             file = f.read()
