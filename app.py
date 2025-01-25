@@ -651,17 +651,34 @@ def get_problem_list(problem_id):
         # to fetch problem list
         else:
             allProblemList = []
+            user_uuid = ""
+            if "refresh_token_cookie" in request.cookies:
+                user_uuid = utils.decode_token(request.headers["Authorization"].split()[1], jwt_secret_key)["user_uuid"]
+
             allProblemObject = db_session_ac.query(ProblemStatementMaster).all()
 
             for problems in allProblemObject:
-                temp = {
-                    "problem_statement_uuid" : problems.problem_statement_uuid,
-                    "problem_statement_title" : problems.problem_statement_metadata.problem_statement_title,
-                    "problem_statement_body" : problems.problem_statement_metadata.problem_statement_body,
-                    "problem_statement_duration" : problems.problem_statement_metadata.problem_statement_duration,
-                    "problem_statement_tags": problems.problem_statement_metadata.problem_statement_tags,
-                    "problem_statement_difficulty": problems.problem_statement_metadata.problem_statement_difficulty
-                }
+                if user_uuid != "":
+                    row = db_session_ac.query(UserMaster, UserDidProblem).filter(UserMaster.user_id == UserDidProblem.user_id).filter(UserMaster.user_uuid == user_uuid, UserDidProblem.problem_statement_id == problems.problem_statement_id).first()
+
+                    temp = {
+                        "problem_statement_uuid" : problems.problem_statement_uuid,
+                        "problem_statement_title" : problems.problem_statement_metadata.problem_statement_title,
+                        "problem_statement_body" : problems.problem_statement_metadata.problem_statement_body,
+                        "problem_statement_duration" : problems.problem_statement_metadata.problem_statement_duration,
+                        "problem_statement_tags": problems.problem_statement_metadata.problem_statement_tags,
+                        "problem_statement_difficulty": problems.problem_statement_metadata.problem_statement_difficulty,
+                        "problem_statement_status": "solved" if row else "unsolved"
+                    }
+                else:
+                    temp = {
+                        "problem_statement_uuid" : problems.problem_statement_uuid,
+                        "problem_statement_title" : problems.problem_statement_metadata.problem_statement_title,
+                        "problem_statement_body" : problems.problem_statement_metadata.problem_statement_body,
+                        "problem_statement_duration" : problems.problem_statement_metadata.problem_statement_duration,
+                        "problem_statement_tags": problems.problem_statement_metadata.problem_statement_tags,
+                        "problem_statement_difficulty": problems.problem_statement_metadata.problem_statement_difficulty
+                    }
 
                 allProblemList.append(temp)
             
