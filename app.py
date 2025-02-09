@@ -22,10 +22,12 @@ CORS(app, supports_credentials=True)
 environment = os.environ.get("env")
 db_username = os.environ.get("db_username")
 db_password = os.environ.get("db_password")
-vm_ip = os.environ.get("vm_ip")
+vm_host = os.environ.get("vm_host")
+vm_port = os.environ.get("vm_port")
+db_name = os.environ.get("db_name")
 
 #Db configuration
-DATABASE_URL = f"postgresql://{db_username}:{db_password}@{vm_ip}:5432/coderrank_db"
+DATABASE_URL = f"postgresql://{db_username}:{db_password}@{vm_host}:{vm_port}/{db_name}"
 print(DATABASE_URL)
 db_engine = create_engine(DATABASE_URL)
 db_session = sessionmaker(bind=db_engine)
@@ -107,12 +109,12 @@ def execute(language_name, code, input, user_uuid):
         with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
             f.write(code)
         
-        output = requests.request("POST", url=f"http://{vm_ip}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
     else:
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
             f.write(code)
         
-        output = requests.request("POST", url=f"http://{vm_ip}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/solution.py", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/solution.py", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
     
     return output
 
