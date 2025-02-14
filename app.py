@@ -109,12 +109,12 @@ def execute(language_name, code, input, user_uuid):
         with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
             f.write(code)
         
-        output = requests.request("POST", url=f"http://34.67.162.2:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
     else:
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
             f.write(code)
         
-        output = requests.request("POST", url=f"http://34.67.162.2:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/solution.py", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/solution.py", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
     
     return output
 
