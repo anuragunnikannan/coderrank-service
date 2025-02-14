@@ -32,6 +32,8 @@ services:
       - "/home/anurag/codes:/home/codes"
     ports:
       - "5001:5000"
+    environment:
+      env: dev
   coderrank-db:
     image: postgres:16
     container_name: coderrank-db
