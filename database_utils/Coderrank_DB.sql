@@ -37,12 +37,11 @@ CREATE TABLE problem_statement_master (
 -- Table: problem_statement_metadata
 CREATE TABLE problem_statement_metadata (
   problem_statement_id BIGSERIAL PRIMARY KEY NOT NULL,
+  problem_statement_title VARCHAR,
   problem_statement_body TEXT,
-  sample_input VARCHAR,
-  sample_output VARCHAR,
-  problem_duration INTEGER,
-  problem_hint TEXT,
-  no_of_test_cases INTEGER,
+  problem_statement_duration INTEGER,
+  problem_statement_difficulty VARCHAR(10),
+  problem_statement_tags TEXT,
   CONSTRAINT fk_problem_statement_metadata
     FOREIGN KEY (problem_statement_id)
     REFERENCES problem_statement_master(problem_statement_id)
@@ -52,17 +51,13 @@ CREATE TABLE problem_statement_metadata (
 CREATE TABLE problem_statement_test_cases (
   test_case_id BIGSERIAL PRIMARY KEY NOT NULL,
   problem_statement_id INTEGER NOT NULL,
-  language_id INTEGER,
-  expected_input VARCHAR,
+  input VARCHAR,
   expected_output VARCHAR,
   test_case_weightage INTEGER,
   is_hidden BOOLEAN,
   CONSTRAINT fk_problem_statement_test_cases_problem
     FOREIGN KEY (problem_statement_id)
-    REFERENCES problem_statement_master(problem_statement_id),
-  CONSTRAINT fk_problem_statement_test_cases_language
-    FOREIGN KEY (language_id)
-    REFERENCES language_info(language_id)
+    REFERENCES problem_statement_master(problem_statement_id)
 );
 
 -- Table: user_master
@@ -91,23 +86,25 @@ CREATE TABLE user_metadata (
 CREATE TABLE user_did_problem (
   user_id INTEGER NOT NULL,
   problem_statement_id INTEGER NOT NULL,
-  PRIMARY KEY (user_id, problem_statement_id),
+  code TEXT NOT NULL,
+  test_cases_passed INTEGER NOT NULL,
+  total_test_cases INTEGER NOT NULL,
+  language_id INTEGER NOT NULL,
+  PRIMARY KEY (user_id, problem_statement_id, language_id),
   CONSTRAINT fk_user_did_problem_user
     FOREIGN KEY (user_id)
     REFERENCES user_master(user_id),
   CONSTRAINT fk_user_did_problem_problem
     FOREIGN KEY (problem_statement_id)
-    REFERENCES problem_statement_master(problem_statement_id)
+    REFERENCES problem_statement_master(problem_statement_id),
+  CONSTRAINT fk_user_did_problem_language_info
+    FOREIGN KEY (language_id)
+    REFERENCES language_info(language_id)
 );
 
--- Table: test_cases_in_language
-CREATE TABLE test_cases_in_language (
-  language_id INTEGER PRIMARY KEY NOT NULL,
-  problem_statement_id INTEGER NOT NULL,
-  CONSTRAINT fk_test_cases_language
-    FOREIGN KEY (language_id)
-    REFERENCES language_info(language_id),
-  CONSTRAINT fk_test_cases_problem
-    FOREIGN KEY (problem_statement_id)
-    REFERENCES problem_statement_test_cases(problem_statement_id)
+CREATE TABLE public.blacklisted_tokens (
+	id bigserial NOT NULL,
+	blacklisted_token varchar NULL,
+	blacklisted_timestamp timestamp NULL,
+	CONSTRAINT blacklisted_tokens_pkey PRIMARY KEY (id)
 );
