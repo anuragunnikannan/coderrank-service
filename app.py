@@ -111,23 +111,21 @@ def execute(language_name, code, input, user_uuid):
         with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
             f.write(code)
         
-        # output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
         output = subprocess.run(["./java-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
 
     else:
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
             f.write(code)
         
-        output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/solution.py", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        output = subprocess.run(["./python-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
     
     stdout = output.stdout.decode().strip()
     stderr = output.stderr.decode().strip()
 
-    # if len(stderr) > len(stdout):
-    #     return stderr
-    # else:
-    #     return stdout
-    return stdout
+    if len(stderr) > len(stdout):
+        return stderr
+    else:
+        return stdout
     
 
 @app.route("/run-code", methods=["POST"])
