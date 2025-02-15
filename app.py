@@ -112,7 +112,7 @@ def execute(language_name, code, input, user_uuid):
             f.write(code)
         
         # output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
-        output = subprocess.run(["java-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
+        output = subprocess.run(["./java-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
 
     else:
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
