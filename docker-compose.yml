@@ -26,6 +26,8 @@ services:
       vm_host: ""
       vm_port: ""
       db_name: ""
+      vm_username: ""
+      vm_password: ""
   coderrank-execution-service:
     build: ./coderrank-execution-service
     image: coderrank-execution-service
