@@ -16,4 +16,4 @@ command="echo ${password} | sudo -S docker run --rm --network=none -i -v /home/a
 
 output=`sshpass -p ${password} ssh -q -o StrictHostKeyChecking=no -t ${username}@${internal_ip} ${command}`
 
-echo $command
+echo $output
