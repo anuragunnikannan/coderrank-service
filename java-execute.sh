@@ -8,7 +8,7 @@ password=$2
 username=$3
 internal_ip=$4
 
-command="'echo $password | sudo -S bash -c docker run --rm --network=none -i -v /home/anurag/codes/$dir_name:/app openjdk java /app/Solution.java < /home/anurag/codes/$dir_name/input.txt'"
+command="echo $password | sudo -S bash -c 'docker run --rm --network=none -i -v /home/anurag/codes/$dir_name:/app openjdk java /app/Solution.java < /home/anurag/codes/$dir_name/input.txt"
 
 # sshpass -p password scp -o StrictHostKeyChecking=no /app/input.sql anurag@ip:/home/anurag/
 
