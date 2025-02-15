@@ -123,10 +123,11 @@ def execute(language_name, code, input, user_uuid):
     stdout = output.stdout.decode().strip()
     stderr = output.stderr.decode().strip()
 
-    if len(stderr) > len(stdout):
-        return stderr
-    else:
-        return stdout
+    # if len(stderr) > len(stdout):
+    #     return stderr
+    # else:
+    #     return stdout
+    return stdout
     
 
 @app.route("/run-code", methods=["POST"])
