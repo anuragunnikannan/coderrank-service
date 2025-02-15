@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 # Install dependencies for Docker and sshpass
-RUN apt-get update && apt-get sshpass openssh-client
+RUN apt-get update && apt-get install sshpass openssh-client
 
 # Set up working directory
 WORKDIR /app
