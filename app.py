@@ -22,9 +22,11 @@ CORS(app, supports_credentials=True)
 environment = os.environ.get("env") if os.environ.get("env") else "local"
 db_username = os.environ.get("db_username") if os.environ.get("db_username") else "postgres"
 db_password = os.environ.get("db_password") if os.environ.get("db_password") else "password"
-vm_host = os.environ.get("vm_host") if os.environ.get("vm_host") else "34.67.162.2"
+vm_host = os.environ.get("vm_host")
 vm_port = os.environ.get("vm_port") if os.environ.get("vm_port") else "5432"
 db_name = os.environ.get("db_name") if os.environ.get("db_name") else "coderrank_db"
+vm_password = os.environ.get("vm_password")
+vm_username = os.environ.get("vm_username")
 
 #Db configuration
 DATABASE_URL = f"postgresql://{db_username}:{db_password}@{vm_host}:{vm_port}/{db_name}"
@@ -109,14 +111,23 @@ def execute(language_name, code, input, user_uuid):
         with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
             f.write(code)
         
-        output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        # output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/Solution.java", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
+        output = subprocess.run(["java-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
+
     else:
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
             f.write(code)
         
         output = requests.request("POST", url=f"http://{vm_host}:5001/execute", data=json.dumps({"language_name": language_name, "filename": f"/home/codes/{user_uuid}/solution.py", "input_filename": f"/home/codes/{user_uuid}/input.txt"}), headers={"Content-Type": "application/json"}).json()
     
-    return output
+    stdout = output.stdout.decode().strip()
+    stderr = output.stderr.decode().strip()
+
+    if len(stderr) > len(stdout):
+        return stderr
+    else:
+        return stdout
+    
 
 @app.route("/run-code", methods=["POST"])
 def run_code():
