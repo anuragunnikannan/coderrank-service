@@ -115,6 +115,9 @@ def invoke_execution_service(code, input, user_uuid, vm_password, vm_username, v
     if mode == "run":
         with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
             f.write(input)
+    elif mode == "submit":
+        with open(f"/home/codes/{user_uuid}/test_cases.json", "w") as f:
+            f.write(input)
 
     output = subprocess.run(["./code-execute.sh", user_uuid, vm_password, vm_username, vm_host, mode, language_name], capture_output=True)
 
