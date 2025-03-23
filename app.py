@@ -260,10 +260,10 @@ def submit_code():
             test_cases_passed += 1
             flag = True
 
-        if not i.is_hidden:
-            temp["input"] = i.input
+        if not test_cases_list[i].is_hidden:
+            temp["input"] = test_cases_list[i].input
             temp["output"] = output[i]
-            temp["expected_output"] = i.expected_output
+            temp["expected_output"] = test_cases_list[i].expected_output
             temp["passed"] = flag
             response["test_cases"].append(temp)
         else:
