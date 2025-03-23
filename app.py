@@ -262,7 +262,7 @@ def submit_code():
 
         if not test_cases_list[i].is_hidden:
             temp["input"] = test_cases_list[i].input
-            temp["output"] = output[i] if res["compilation_status"] != "failed" else res["outputs"][0]
+            temp["output"] = res["outputs"][i] if res["compilation_status"] != "failed" else res["outputs"][0]
             temp["expected_output"] = test_cases_list[i].expected_output
             temp["passed"] = flag
             response["test_cases"].append(temp)
