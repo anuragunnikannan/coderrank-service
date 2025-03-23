@@ -251,12 +251,12 @@ def submit_code():
         
         if res["compilation_status"] != "failed":
             logging.error("output")
-            logging.error(type(output[i]))
+            logging.error(type(res["outputs"][i]))
 
             logging.error("expected_output")
             logging.error(type(test_cases_list[i].expected_output))
 
-            if output[i] == test_cases_list[i].expected_output:
+            if res["outputs"][i] == test_cases_list[i].expected_output:
                 test_cases_passed += 1
                 flag = True
 
