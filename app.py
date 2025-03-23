@@ -233,19 +233,26 @@ def submit_code():
 
     response = {"test_cases": []}
 
-    # executing code and storing results
+    temp = []
     for i in test_cases_list:
+        temp.append(i.input)
+    
+    input = '\n'.join(temp)
+    output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "run", language_name.lower())
+
+    output = json.loads(output)
+
+    for i in range(len(test_cases_list)):
         temp = {}
         flag = False
-        result = execute(language_name, code, i.input, user_uuid)
 
-        if result == i.expected_output:
+        if output[i] == test_cases_list[i].expected_output:
             test_cases_passed += 1
             flag = True
 
         if not i.is_hidden:
             temp["input"] = i.input
-            temp["output"] = result
+            temp["output"] = output[i]
             temp["expected_output"] = i.expected_output
             temp["passed"] = flag
             response["test_cases"].append(temp)
