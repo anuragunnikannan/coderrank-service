@@ -100,32 +100,37 @@ def add_language_options():
 
 
 
-def execute(language_name, code, input, user_uuid):
+def invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, mode, language_name):
     output = ""
 
     os.makedirs(os.path.dirname(f"/home/codes/{user_uuid}/"), exist_ok=True)
-    with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
-        f.write(input)
 
-    if language_name == "Java":
+    if language_name == "java":
         with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
             f.write(code)
-        
-        output = subprocess.run(["./java-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
-
-    else:
+    elif language_name == "python":
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
             f.write(code)
-        
-        output = subprocess.run(["./python-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
     
+    if mode == "run":
+        with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
+            f.write(input)
+    elif mode == "submit":
+        with open(f"/home/codes/{user_uuid}/test_cases.json", "w") as f:
+            f.write(input)
+
+    output = subprocess.run(["./code-execute.sh", user_uuid, vm_password, vm_username, vm_host, mode, language_name], capture_output=True)
+
     stdout = output.stdout.decode().strip()
     stderr = output.stderr.decode().strip()
-
+    
+    response = ""
     if len(stderr) > len(stdout):
-        return stderr
+        response = stderr
     else:
-        return stdout
+        response = stdout
+    
+    return response
     
 
 @app.route("/run-code", methods=["POST"])
@@ -145,8 +150,7 @@ def run_code():
     
     language_name = db_session_ac.query(LanguageInfo).filter_by(language_id=language_id).first().language_name
 
-    output = execute(language_name, code, input, user_uuid)
-
+    output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "run", language_name.lower())
     return jsonify(output)
 
 # code execution through docker exec
@@ -232,20 +236,34 @@ def submit_code():
 
     response = {"test_cases": []}
 
-    # executing code and storing results
+    temp = {"inputs": []}
     for i in test_cases_list:
+        temp["inputs"].append(i.input)
+    
+    input = json.dumps(temp)
+    output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
+
+    res = json.loads(output)
+
+    for i in range(len(test_cases_list)):
         temp = {}
         flag = False
-        result = execute(language_name, code, i.input, user_uuid)
+        
+        if res["compilation_status"] != "failed":
+            logging.error("output")
+            logging.error(type(res["outputs"][i]))
 
-        if result == i.expected_output:
-            test_cases_passed += 1
-            flag = True
+            logging.error("expected_output")
+            logging.error(type(test_cases_list[i].expected_output))
 
-        if not i.is_hidden:
-            temp["input"] = i.input
-            temp["output"] = result
-            temp["expected_output"] = i.expected_output
+            if res["outputs"][i] == test_cases_list[i].expected_output:
+                test_cases_passed += 1
+                flag = True
+
+        if not test_cases_list[i].is_hidden:
+            temp["input"] = test_cases_list[i].input
+            temp["output"] = res["outputs"][i] if res["compilation_status"] != "failed" else res["outputs"][0]
+            temp["expected_output"] = test_cases_list[i].expected_output
             temp["passed"] = flag
             response["test_cases"].append(temp)
         else:

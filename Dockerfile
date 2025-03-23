@@ -15,8 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir /home/codes
 
 # Ensure scripts have the proper permissions
-RUN chmod 777 ./java-execute.sh
-RUN chmod 777 ./python-execute.sh
+RUN chmod 777 ./code-execute.sh
 
 # Expose the Flask app port
 EXPOSE 5000
