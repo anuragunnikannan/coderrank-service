@@ -240,7 +240,7 @@ def submit_code():
     for i in test_cases_list:
         temp["inputs"].append(i.input)
     
-    input = str(temp)
+    input = json.dumps(temp)
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
     logging.error(output)
