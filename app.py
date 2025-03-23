@@ -100,7 +100,7 @@ def add_language_options():
 
 
 
-def invoke_execution_service(code, user_uuid, vm_password, vm_username, vm_host, mode, language_name):
+def invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, mode, language_name):
     output = ""
 
     os.makedirs(os.path.dirname(f"/home/codes/{user_uuid}/"), exist_ok=True)
@@ -147,7 +147,7 @@ def run_code():
     
     language_name = db_session_ac.query(LanguageInfo).filter_by(language_id=language_id).first().language_name
 
-    output = invoke_execution_service(code, user_uuid, vm_password, vm_username, vm_host, "run", language_name.lower())
+    output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "run", language_name.lower())
     return jsonify(output)
 
 # code execution through docker exec
