@@ -243,26 +243,26 @@ def submit_code():
     input = json.dumps(temp)
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
-    logging.error(output)
-    output = json.loads(output)
+    res = json.loads(output)
 
     for i in range(len(test_cases_list)):
         temp = {}
         flag = False
         
-        logging.error("output")
-        logging.error(type(output[i]))
+        if res["compilation_status"] != "failed":
+            logging.error("output")
+            logging.error(type(output[i]))
 
-        logging.error("expected_output")
-        logging.error(type(test_cases_list[i].expected_output))
+            logging.error("expected_output")
+            logging.error(type(test_cases_list[i].expected_output))
 
-        if output[i] == test_cases_list[i].expected_output:
-            test_cases_passed += 1
-            flag = True
+            if output[i] == test_cases_list[i].expected_output:
+                test_cases_passed += 1
+                flag = True
 
         if not test_cases_list[i].is_hidden:
             temp["input"] = test_cases_list[i].input
-            temp["output"] = output[i]
+            temp["output"] = output[i] if res["compilation_status"] != "failed" else res["outputs"][0]
             temp["expected_output"] = test_cases_list[i].expected_output
             temp["passed"] = flag
             response["test_cases"].append(temp)
