@@ -248,6 +248,12 @@ def submit_code():
     for i in range(len(test_cases_list)):
         temp = {}
         flag = False
+        
+        logging.info("output")
+        logging.info(type(output[i]))
+
+        logging.info("expected_output")
+        logging.info(type(test_cases_list[i].expected_output))
 
         if str(output[i]) == test_cases_list[i].expected_output:
             test_cases_passed += 1
