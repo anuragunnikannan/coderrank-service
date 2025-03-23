@@ -241,7 +241,7 @@ def submit_code():
         temp.append(i.input)
     
     input = '\n'.join(temp)
-    output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "run", language_name.lower())
+    output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
     output = json.loads(output)
 
@@ -255,7 +255,7 @@ def submit_code():
         logging.info("expected_output")
         logging.info(type(test_cases_list[i].expected_output))
 
-        if str(output[i]) == test_cases_list[i].expected_output:
+        if output[i] == test_cases_list[i].expected_output:
             test_cases_passed += 1
             flag = True
 
