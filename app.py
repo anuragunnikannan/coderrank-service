@@ -100,32 +100,34 @@ def add_language_options():
 
 
 
-def execute(language_name, code, input, user_uuid):
+def invoke_execution_service(code, user_uuid, vm_password, vm_username, vm_host, mode, language_name):
     output = ""
 
     os.makedirs(os.path.dirname(f"/home/codes/{user_uuid}/"), exist_ok=True)
-    with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
-        f.write(input)
 
-    if language_name == "Java":
+    if language_name == "java":
         with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
             f.write(code)
-        
-        output = subprocess.run(["./java-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
-
-    else:
+    elif language_name == "python":
         with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
             f.write(code)
-        
-        output = subprocess.run(["./python-execute.sh", user_uuid, vm_password, vm_username, vm_host], capture_output=True, timeout=5)
     
+    if mode == "run":
+        with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
+            f.write(input)
+
+    output = subprocess.run(["./code-execute.sh", user_uuid, vm_password, vm_username, vm_host, mode, language_name], capture_output=True)
+
     stdout = output.stdout.decode().strip()
     stderr = output.stderr.decode().strip()
-
+    
+    response = ""
     if len(stderr) > len(stdout):
-        return stderr
+        response = stderr
     else:
-        return stdout
+        response = stdout
+    
+    return response
     
 
 @app.route("/run-code", methods=["POST"])
@@ -145,18 +147,8 @@ def run_code():
     
     language_name = db_session_ac.query(LanguageInfo).filter_by(language_id=language_id).first().language_name
 
-    output = subprocess.run(["./code-execute.sh", user_uuid, vm_password, vm_username, vm_host, "run", language_name], capture_output=True)
-
-    stdout = output.stdout.decode().strip()
-    stderr = output.stderr.decode().strip()
-    
-    response = ""
-    if len(stderr) > len(stdout):
-        response = stderr
-    else:
-        response = stdout
-
-    return jsonify(response)
+    output = invoke_execution_service(code, user_uuid, vm_password, vm_username, vm_host, "run", language_name.lower())
+    return jsonify(output)
 
 # code execution through docker exec
 @app.route('/execute_code_docker', methods=['POST'])
