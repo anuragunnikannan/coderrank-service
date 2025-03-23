@@ -246,7 +246,7 @@ def submit_code():
         temp = {}
         flag = False
 
-        if output[i] == test_cases_list[i].expected_output:
+        if str(output[i]) == test_cases_list[i].expected_output:
             test_cases_passed += 1
             flag = True
 
