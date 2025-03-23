@@ -236,24 +236,25 @@ def submit_code():
 
     response = {"test_cases": []}
 
-    temp = []
+    temp = {"inputs": []}
     for i in test_cases_list:
-        temp.append(i.input)
+        temp["inputs"].append(i.input)
     
-    input = '\n'.join(temp)
+    input = str(temp)
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
+    logging.error(output)
     output = json.loads(output)
 
     for i in range(len(test_cases_list)):
         temp = {}
         flag = False
         
-        logging.info("output")
-        logging.info(type(output[i]))
+        logging.error("output")
+        logging.error(type(output[i]))
 
-        logging.info("expected_output")
-        logging.info(type(test_cases_list[i].expected_output))
+        logging.error("expected_output")
+        logging.error(type(test_cases_list[i].expected_output))
 
         if output[i] == test_cases_list[i].expected_output:
             test_cases_passed += 1
