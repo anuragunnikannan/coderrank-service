@@ -145,9 +145,18 @@ def run_code():
     
     language_name = db_session_ac.query(LanguageInfo).filter_by(language_id=language_id).first().language_name
 
-    output = execute(language_name, code, input, user_uuid)
+    output = subprocess.run(["./code-execute.sh", user_uuid, vm_password, vm_username, vm_host, "run", language_name], capture_output=True)
 
-    return jsonify(output)
+    stdout = output.stdout.decode().strip()
+    stderr = output.stderr.decode().strip()
+    
+    response = ""
+    if len(stderr) > len(stdout):
+        response = stderr
+    else:
+        response = stdout
+
+    return jsonify(response)
 
 # code execution through docker exec
 @app.route('/execute_code_docker', methods=['POST'])
