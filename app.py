@@ -250,6 +250,7 @@ def submit_code():
     
     # converting dictionary to string so as to write it to a file
     input = json.dumps(temp)
+    logging.info(input)
     
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
