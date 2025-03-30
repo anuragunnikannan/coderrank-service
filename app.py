@@ -250,7 +250,7 @@ def submit_code():
     
     # converting dictionary to string so as to write it to a file
     input = json.dumps(temp)
-    logging.info(input)
+    logging.error(input)
     
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
@@ -262,12 +262,6 @@ def submit_code():
         flag = False
         
         if res["compilation_status"] != "failed":
-            logging.error("output")
-            logging.error(type(res["outputs"][i]))
-
-            logging.error("expected_output")
-            logging.error(type(test_cases_list[i].expected_output))
-
             if res["outputs"][i] == test_cases_list[i].expected_output:
                 test_cases_passed += 1
                 flag = True
