@@ -108,7 +108,7 @@ def invoke_execution_service(code, input, user_uuid, vm_password, vm_username, v
     language_filename_mapping = {
         "java": "Solution.java",
         "python": "solution.py",
-        "c++": "solution.cpp",
+        "cpp": "solution.cpp",
         "javascript": "solution.js"
     }
 
