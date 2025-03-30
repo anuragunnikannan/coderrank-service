@@ -255,6 +255,7 @@ def submit_code():
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
     # converting string output to dictionary
+    logging.error(output)
     res = json.loads(output)
 
     for i in range(len(test_cases_list)):
