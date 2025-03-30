@@ -141,7 +141,7 @@ def run_code():
     data = request.get_json()
     language_id = data["language_id"]
     code = data["code"]
-    input = data["input"]
+    input = data["input"] + "\n"
     user_uuid = ""
 
     # fetching user_uuid by decoding jwt if user has logged in
@@ -246,7 +246,7 @@ def submit_code():
     # creating test cases json after querying test_cases table
     temp = {"inputs": []}
     for i in test_cases_list:
-        temp["inputs"].append(i.input)
+        temp["inputs"].append(i.input+"\n")
     
     # converting dictionary to string so as to write it to a file
     input = json.dumps(temp)
