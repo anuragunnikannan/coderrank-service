@@ -105,12 +105,15 @@ def invoke_execution_service(code, input, user_uuid, vm_password, vm_username, v
 
     os.makedirs(os.path.dirname(f"/home/codes/{user_uuid}/"), exist_ok=True)
 
-    if language_name == "java":
-        with open(f"/home/codes/{user_uuid}/Solution.java", "w") as f:
-            f.write(code)
-    elif language_name == "python":
-        with open(f"/home/codes/{user_uuid}/solution.py", "w") as f:
-            f.write(code)
+    language_filename_mapping = {
+        "java": "Solution.java",
+        "python": "solution.py",
+        "cpp": "solution.cpp",
+        "javascript": "solution.js"
+    }
+
+    with open(f"/home/codes/{user_uuid}/{language_filename_mapping[language_name]}", "w") as f:
+        f.write(code)
     
     if mode == "run":
         with open(f"/home/codes/{user_uuid}/input.txt", "w") as f:
@@ -138,10 +141,14 @@ def run_code():
     data = request.get_json()
     language_id = data["language_id"]
     code = data["code"]
-    input = data["input"]
+    input = data["input"] + "\n"
     user_uuid = ""
+
+    # fetching user_uuid by decoding jwt if user has logged in
     if "refresh_token_cookie" in request.cookies:
         user_uuid = utils.decode_token(request.headers["Authorization"].split()[1], jwt_secret_key)["user_uuid"]
+    
+    # using guest_id as user_uuid if user has not logged in
     elif "guest_id" in data:
         user_uuid = f"guest_{data['guest_id']}"
     else:
@@ -236,13 +243,19 @@ def submit_code():
 
     response = {"test_cases": []}
 
+    # creating test cases json after querying test_cases table
     temp = {"inputs": []}
     for i in test_cases_list:
-        temp["inputs"].append(i.input)
+        temp["inputs"].append(i.input+"\n")
     
+    # converting dictionary to string so as to write it to a file
     input = json.dumps(temp)
+    logging.error(input)
+    
     output = invoke_execution_service(code, input, user_uuid, vm_password, vm_username, vm_host, "submit", language_name.lower())
 
+    # converting string output to dictionary
+    logging.error(output)
     res = json.loads(output)
 
     for i in range(len(test_cases_list)):
@@ -250,12 +263,6 @@ def submit_code():
         flag = False
         
         if res["compilation_status"] != "failed":
-            logging.error("output")
-            logging.error(type(res["outputs"][i]))
-
-            logging.error("expected_output")
-            logging.error(type(test_cases_list[i].expected_output))
-
             if res["outputs"][i] == test_cases_list[i].expected_output:
                 test_cases_passed += 1
                 flag = True
