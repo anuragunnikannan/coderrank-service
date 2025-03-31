@@ -1,7 +1,13 @@
 import jwt, random, string, requests
 
 def decode_token(token, secret):
-    return jwt.decode(token, algorithms=["HS256"], key=secret)
+    decoded_token = {"user_uuid": "", "sub": ""}
+    try:
+        decoded_token = jwt.decode(token, algorithms=["HS256"], key=secret)
+    except Exception as e:
+        return decoded_token
+
+    return decoded_token
 
 def generate_random_secret_key(length):
     hexString = string.hexdigits
